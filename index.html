@@ -10,7 +10,7 @@
 		uniform mat4 uPMatrix;
 		varying vec4 vColor;
 		void main(void) {
-			gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
+			gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 2.0);
 			vColor = aVertexColor;
 		}
 	</script>
@@ -23,15 +23,31 @@
 	</script>
 
 	<!--Funções-->
-	<script type="text/javascript" src="../libs/glMatrix-0.9.5.min.js"></script>
-	<script type="text/javascript" src="../libs/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="../libs/webgl-utils.js"></script>
+	<script type="text/javascript" src="jquery-2.2.2.min.js"></script>
+	<script type="text/javascript" src="webgl-utils.js"></script>
+	<script type="text/javascript" src="MV.js"></script>
 	<script type="text/javascript" src="main.js"></script>
+	
+	<link rel="stylesheet" href="main.css" type="text/css" />
 
 </head>
 
 <body>
-	<canvas id="licao01-canvas" width="500" height="500"></canvas>
+	<canvas id="canvas" width="500" height="500"></canvas>
+	
+	
+	
+	<nav id="menu">
+		<form>
+		  <input type="number" name="subdivision" placeholder="Divisoes"><br>
+		  <input type="number" name="subdivision" placeholder="Numero de objetos"><br>
+		  <input type="radio" name="mode" value="smooth" checked> Smooth<br>
+		  <input type="radio" name="mode" value="wireframe"> Wireframe<br>
+		  <input type="checkbox" name="pause" value="pause">Pause<br>
+		</form>
+	</nav>
+	
+	
 </body>
 
 </html>

@@ -1,19 +1,15 @@
 var gl;
 var shaderProgram;
 var piramideVertexPositionBuffer;
-var cuboVertexPositionBuffer;
 var piramideVertexColorBuffer;
-var cuboVertexColorBuffer;
-var cuboVertexIndexBuffer;
 
 
-var mMatrix = mat4.create();
+var mMatrix = mat4();
 var mMatrixPilha = [];
-var pMatrix = mat4.create();
-var vMatrix = mat4.create();
+var pMatrix = mat4();
+var vMatrix = mat4();
 
 var rPiramide = 0;
-var rCubo = 0;
 
 var ultimo = 0;
 
@@ -24,7 +20,9 @@ $(function() {
 
 // Iniciar o ambiente
 function iniciaWebGL() {
-    var canvas = $('#licao01-canvas')[0];
+    var canvas = $('#canvas')[0];
+    $(canvas).width(window.innerWidth);
+    $(canvas).height(window.innerHeight);
     iniciarGL(canvas); // Definir como um canvas 3D
     iniciarShaders(); // Obter e processar os Shaders
     iniciarBuffers(); // Enviar o triângulo e quadrado na GPU
@@ -43,6 +41,8 @@ function iniciarGL(canvas) {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         gl.viewportWidth = canvas.width;
         gl.viewportHeight = canvas.height;
+        
+        
     }
     catch (e) {
         if (!gl) {
@@ -120,116 +120,123 @@ function iniciarBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexPositionBuffer);
     var vertices = [
         // Frente
-        0.0, 1.0, 0.0, -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
+         0.0 , 1.0 , 0.0  , 
+        -1.0 , 0.0 , 1.0  ,
+         1.0 , 0.0 , 1.0  ,
         // Direita
-        0.0, 1.0, 0.0,
-        1.0, -1.0, 1.0,
-        1.0, -1.0, -1.0,
+         0.0 , 1.0 ,  0.0 ,
+         1.0 , 0.0 ,  1.0 ,
+         1.0 , 0.0 , -1.0 ,
         // Trás
-        0.0, 1.0, 0.0,
-        1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
+         0.0 , 1.0 ,  0.0 ,
+         1.0 , 0.0 , -1.0 , 
+        -1.0 , 0.0 , -1.0 ,
         // Esquerda
-        0.0, 1.0, 0.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0
+         0.0 , 1.0 ,  0.0 , 
+        -1.0 , 0.0 , -1.0 , 
+        -1.0 , 0.0 ,  1.0 ,
+
+
+        0.0 , -1.0 , 0.0 , 
+       -1.0 ,  0.0 , 1.0 ,
+        1.0 ,  0.0 , 1.0 ,
+        // Direita
+        0.0 , -1.0 ,  0.0 ,
+        1.0 ,  0.0 ,  1.0 ,
+        1.0 ,  0.0 , -1.0 ,
+        // Trás
+        0.0 , -1.0 ,  0.0 ,
+        1.0 ,  0.0 , -1.0 , 
+       -1.0 ,  0.0 , -1.0 ,
+        // Esquerda
+        0.0 , -1.0 ,  0.0 , 
+       -1.0 ,  0.0 , -1.0 , 
+       -1.0 ,  0.0 ,  1.0
+
+
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     piramideVertexPositionBuffer.itemSize = 3;
-    piramideVertexPositionBuffer.numItems = 12;
+    piramideVertexPositionBuffer.numItems = vertices.length / 3;
 
     piramideVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
     var cores = [
-        // Frente
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
+        // 1.0, 1.0, 1.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
         // Direita
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
         // Trás
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
         // Esquerda
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0,
-        0.0, 1.0, 0.0, 1.0
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+
+
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
+        // // Direita
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // // Trás
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
+        // // Esquerda
+        // 1.0, 0.0, 0.0, 1.0,
+        // 0.0, 0.0, 1.0, 1.0,
+        // 0.0, 1.0, 0.0, 1.0
+        
+        // Frente
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        //DIREITA
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        //TRAZ
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        //ESQUERDA
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0
+
+
+
+
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cores), gl.STATIC_DRAW);
     piramideVertexColorBuffer.itemSize = 4;
-    piramideVertexColorBuffer.numItems = 12;
+    piramideVertexColorBuffer.numItems = cores.length / 4;
 
-    cuboVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexPositionBuffer);
-    vertices = [
-        // Front face
-        -1.0, -1.0, 1.0,
-        1.0, -1.0, 1.0,
-        1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
 
-        // Back face
-        -1.0, -1.0, -1.0, -1.0, 1.0, -1.0,
-        1.0, 1.0, -1.0,
-        1.0, -1.0, -1.0,
-
-        // Top face
-        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0,
-        1.0, 1.0, -1.0,
-
-        // Bottom face
-        -1.0, -1.0, -1.0,
-        1.0, -1.0, -1.0,
-        1.0, -1.0, 1.0, -1.0, -1.0, 1.0,
-
-        // Right face
-        1.0, -1.0, -1.0,
-        1.0, 1.0, -1.0,
-        1.0, 1.0, 1.0,
-        1.0, -1.0, 1.0,
-
-        // Left face
-        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    cuboVertexPositionBuffer.itemSize = 3;
-    cuboVertexPositionBuffer.numItems = 4;
-
-    cuboVertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexColorBuffer);
-    cores = [
-        [1.0, 0.0, 0.0, 1.0], // Frente
-        [1.0, 1.0, 0.0, 1.0], // Trás
-        [0.0, 1.0, 0.0, 1.0], // Topo
-        [1.0, 0.5, 0.5, 1.0], // Base
-        [1.0, 0.0, 1.0, 1.0], // Direita
-        [0.0, 0.0, 1.0, 1.0] // Esquerda
-    ];
-    var coresReplicadas = [];
-    for (var i in cores) {
-        var cor = cores[i];
-        for (var j = 0; j < 4; j++) {
-            coresReplicadas = coresReplicadas.concat(cor);
-        }
-    }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(coresReplicadas), gl.STATIC_DRAW);
-    cuboVertexColorBuffer.itemSize = 4;
-    cuboVertexColorBuffer.numItems = 24;
-
-    cuboVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cuboVertexIndexBuffer);
-    var indices = [
-        0, 1, 2, 0, 2, 3, // Frente
-        4, 5, 6, 4, 6, 7, // Trás
-        8, 9, 10, 8, 10, 11, // Topo
-        12, 13, 14, 12, 14, 15, // Base
-        16, 17, 18, 16, 18, 19, // Direita
-        20, 21, 22, 20, 22, 23 // Esquerda
-    ]
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-    cuboVertexIndexBuffer.itemSize = 1;
-    cuboVertexIndexBuffer.numItems = 36;
 }
 
 function iniciarAmbiente() {
@@ -239,46 +246,31 @@ function iniciarAmbiente() {
 
 function desenharCena() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-    mat4.identity(mMatrix);
-    mat4.identity(vMatrix);
+    pMatrix = perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+    mMatrix = mat4();
+    vMatrix = mat4();
 
     // Desenhando Triângulo
-    mat4.translate(mMatrix, [-1.5, 0.0, -7.0]);
 
     mPushMatrix();
-    mat4.rotate(mMatrix, degToRad(rPiramide), [0, 1, 0]);
+    mMatrix = translate([0, 0.0, -7.0]);
+    // mMatrix = rotate(rPiramide, [0, 1, 0]);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, piramideVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);
+    //gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);// smoof 
+    gl.drawArrays(gl.LINE_STRIP, 0, piramideVertexPositionBuffer.numItems); // wireframe
 
-    mPopMatrix();
-
-
-    // Desenhando o Quadrado
-    mat4.translate(mMatrix, [3.0, 0.0, 0.0]);
-
-    mPushMatrix();
-    mat4.rotate(mMatrix, degToRad(rCubo), [1, 1, 1]);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cuboVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, cuboVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cuboVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cuboVertexIndexBuffer);
-    setMatrixUniforms();
-    gl.drawElements(gl.TRIANGLES, cuboVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     mPopMatrix();
 }
 
 function setMatrixUniforms() {
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, vMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, mMatrix);
+    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, flatten(pMatrix));
+    gl.uniformMatrix4fv(shaderProgram.vMatrixUniform, false, flatten(vMatrix));
+    gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, flatten(mMatrix));
 }
 
 // o 'var ultimo = 0' está no topo (todos as vars globais estão juntas)
@@ -287,14 +279,12 @@ function animar() {
     if (ultimo != 0) {
         var diferenca = agora - ultimo;
         rPiramide += ((90 * diferenca) / 1000.0) % 360.0;
-        rCubo += ((75 * diferenca) / 1000.0) % 360.0;
     }
     ultimo = agora;
 }
 
 function mPushMatrix() {
-    var copy = mat4.create();
-    mat4.set(mMatrix, copy);
+    var copy = mMatrix.slice();
     mMatrixPilha.push(copy);
 }
 
