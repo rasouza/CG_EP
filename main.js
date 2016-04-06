@@ -220,7 +220,7 @@ function animar() {
     var agora = new Date().getTime();
     // Ignora o primeiro frame
     if (ultimo != 0) {
-    	deltaT += (agora - ultimo)/1000;
+    	deltaT = (agora - ultimo)/1000;
     	pingar();
     }
     ultimo = agora;
@@ -230,16 +230,16 @@ function animar() {
 
 var g = -1;
 var h = 3;
-var speed_elastico = 0;
+var speed = 0;
+var elastico = 0;
 function pingar() {
-	speed = g*deltaT + speed_elastico*deltaT;
+	speed += g*deltaT;
 
 	if (mMatrix[1][3] < -3) {
-		speed = 0;		
+		speed = -speed*0.8;
 	}
-	
-	
 	
 	mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
 	setMatrixUniforms();	
+
 }
