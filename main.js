@@ -180,6 +180,7 @@ function iniciarBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideVertexColorBuffer.cores), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
 }
 
 function iniciarAmbiente() {
@@ -188,7 +189,11 @@ function iniciarAmbiente() {
 
     // Posiciona a câmera para visualizar o tetraedro
     pMatrix = perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
-    vMatrix = translate([0, 0.0, -7.0]);
+    vMatrix = translate([0, 0.0, -10.0]);
+
+    // Posiciona o tetraedro no topo da tela
+    mMatrix = translate([0.0, 3.0, 0.0]);
+    
 }
 
 function desenharCena() {
@@ -216,7 +221,6 @@ function animar() {
     // Ignora o primeiro frame
     if (ultimo != 0) {
     	deltaT += (agora - ultimo)/1000;
-
     	pingar();
     }
     ultimo = agora;
@@ -224,9 +228,18 @@ function animar() {
     desenharCena();
 }
 
+var g = -1;
+var h = 3;
+var speed_elastico = 0;
 function pingar() {
-	var g = [0.0, deltaT, 0.0];
-	mMatrix = translate(g);
-	console.log(g);
-	setMatrixUniforms();
+	speed = g*deltaT + speed_elastico*deltaT;
+
+	if (mMatrix[1][3] < -3) {
+		speed = 0;		
+	}
+	
+	
+	
+	mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
+	setMatrixUniforms();	
 }
