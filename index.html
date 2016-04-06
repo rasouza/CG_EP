@@ -1,0 +1,52 @@
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<script id="shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		attribute vec4 aVertexColor;
+		uniform mat4 uMMatrix;
+		uniform mat4 uVMatrix;
+		uniform mat4 uPMatrix;
+		varying vec4 vColor;
+		void main(void) {
+			gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 2.0);
+			vColor = aVertexColor;
+		}
+	</script>
+	<script id="shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		varying vec4 vColor;
+		void main(void) {
+			gl_FragColor = vColor;
+		}
+	</script>
+
+	<!--Funções-->
+	<script type="text/javascript" src="jquery-2.2.2.min.js"></script>
+	<script type="text/javascript" src="MV.js"></script>
+	<script type="text/javascript" src="main.js"></script>
+	
+	<link rel="stylesheet" href="main.css" type="text/css" />
+
+</head>
+
+<body>
+	<canvas id="canvas" width="500" height="500"></canvas>
+	
+	
+	
+	<nav id="menu">
+		<form>
+		  <input type="number" name="subdivision" placeholder="Divisoes"><br>
+		  <input type="number" name="subdivision" placeholder="Numero de objetos"><br>
+		  <input type="radio" name="mode" value="smooth" checked> Smooth<br>
+		  <input type="radio" name="mode" value="wireframe"> Wireframe<br>
+		  <input type="checkbox" name="pause" value="pause">Pause<br>
+		</form>
+	</nav>
+	
+	
+</body>
+
+</html>
