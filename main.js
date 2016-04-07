@@ -101,38 +101,39 @@ function iniciarBuffers() {
     piramideVertexPositionBuffer.itemSize = 3;
     piramideVertexPositionBuffer.vertices = [
         // Frente
-         0.0 , 1.0 , 0.0  , 
-        -1.0 , 0.0 , 1.0  ,
-         1.0 , 0.0 , 1.0  ,
-        // Direita
-         0.0 , 1.0 ,  0.0 ,
-         1.0 , 0.0 ,  1.0 ,
-         1.0 , 0.0 , -1.0 ,
-        // Trás
-         0.0 , 1.0 ,  0.0 ,
-         1.0 , 0.0 , -1.0 , 
-        -1.0 , 0.0 , -1.0 ,
-        // Esquerda
-         0.0 , 1.0 ,  0.0 , 
-        -1.0 , 0.0 , -1.0 , 
-        -1.0 , 0.0 ,  1.0 ,
+         0.0 			, 1.0 , 0.0  			, 
+        -Math.sqrt(0.5) , 0.0 , Math.sqrt(0.5)	,
+         Math.sqrt(0.5) , 0.0 , Math.sqrt(0.5)  ,
 
-
-        0.0 , -1.0 , 0.0 , 
-       -1.0 ,  0.0 , 1.0 ,
-        1.0 ,  0.0 , 1.0 ,
         // Direita
-        0.0 , -1.0 ,  0.0 ,
-        1.0 ,  0.0 ,  1.0 ,
-        1.0 ,  0.0 , -1.0 ,
+         0.0 			, 1.0 , 0.0  			, 
+         Math.sqrt(0.5) , 0.0 ,  Math.sqrt(0.5) ,
+         Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) ,
         // Trás
-        0.0 , -1.0 ,  0.0 ,
-        1.0 ,  0.0 , -1.0 , 
-       -1.0 ,  0.0 , -1.0 ,
+         0.0 			, 1.0 , 0.0  			, 
+         Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) , 
+        -Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) ,
         // Esquerda
-        0.0 , -1.0 ,  0.0 , 
-       -1.0 ,  0.0 , -1.0 , 
-       -1.0 ,  0.0 ,  1.0
+         0.0 			, 1.0 , 0.0  			,  
+        -Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) , 
+        -Math.sqrt(0.5) , 0.0 ,  Math.sqrt(0.5) ,
+
+        // Frente
+        0.0				, -1.0 , 0.0			, 
+       -Math.sqrt(0.5)	,  0.0 , Math.sqrt(0.5) ,
+        Math.sqrt(0.5)	,  0.0 , Math.sqrt(0.5) ,
+        // Direita
+        0.0				, -1.0 , 0.0			, 
+        Math.sqrt(0.5) ,  0.0 ,  Math.sqrt(0.5) ,
+        Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) ,
+        // Trás
+        0.0				, -1.0 , 0.0			, 
+        Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) , 
+       -Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) ,
+        // Esquerda
+        0.0				, -1.0 , 0.0			,  
+       -Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) , 
+       -Math.sqrt(0.5) ,  0.0 ,  Math.sqrt(0.5)
     ];
     piramideVertexPositionBuffer.numItems = piramideVertexPositionBuffer.vertices.length / 3;
 	gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexPositionBuffer);
@@ -248,3 +249,4 @@ function pingar() {
 	setMatrixUniforms();
 
 }
+
