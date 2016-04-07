@@ -235,11 +235,16 @@ var elastico = 0;
 function pingar() {
 	speed += g*deltaT;
 
-	if (mMatrix[1][3] < -3) {
-		speed = -speed*0.8;
-	}
-	
+
 	mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
-	setMatrixUniforms();	
+
+	if (mMatrix[1][3] < -3) {
+    	mMatrix = oldMatrix;
+    	speed = -speed*0.8;
+	}
+
+	oldMatrix = mMatrix;
+
+	setMatrixUniforms();
 
 }
