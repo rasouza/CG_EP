@@ -19,6 +19,7 @@ $(function() {
     iniciarBuffers(); // Enviar o triângulo e quadrado na GPU
     iniciarAmbiente(); // Definir background e cor do objeto
     tick();
+
 });	
 
 // shim layer with setTimeout fallback
@@ -66,6 +67,7 @@ function iniciarShaders() {
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
     shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+
     gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
@@ -135,7 +137,7 @@ function iniciarBuffers() {
        -Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) , 
        -Math.sqrt(0.5) ,  0.0 ,  Math.sqrt(0.5)
     ];
-    piramideVertexPositionBuffer.numItems = piramideVertexPositionBuffer.vertices.length / 3;
+    piramideVertexPositionBuffer.numItems = piramideVertexPositionBuffer.vertices.length / piramideVertexPositionBuffer.itemSize;
 	gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideVertexPositionBuffer.vertices), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, piramideVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -181,7 +183,6 @@ function iniciarBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideVertexColorBuffer.cores), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
 }
 
 function iniciarAmbiente() {
@@ -202,10 +203,10 @@ function desenharCena() {
 
     // Envia o MVP para a GPU
     setMatrixUniforms();
-
+    
+    desenha_poligono(piramideVertexPositionBuffer.vertices, piramideVertexColorBuffer.cores, gl.TRIANGLES);
     //gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);// smooth
-    gl.drawArrays(gl.LINE_STRIP, 0, piramideVertexPositionBuffer.numItems); // wireframe
-
+    
 }
 
 function setMatrixUniforms() {
@@ -232,21 +233,91 @@ function animar() {
 var g = -1;
 var h = 3;
 var speed = 0;
-var elastico = 0;
+var cont = 4; // Número maximo de pingos
 function pingar() {
-	speed += g*deltaT;
+	if (cont > 0) {
+		speed += g*deltaT;
 
+		mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
 
-	mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
+		// Quando bate no chao
+		if (mMatrix[1][3] < -3) {
+	    	mMatrix = oldMatrix;
+	    	speed = -speed*0.8;
+	    	cont--;
 
-	if (mMatrix[1][3] < -3) {
-    	mMatrix = oldMatrix;
-    	speed = -speed*0.8;
+	    	divide_poligono(piramideVertexPositionBuffer.vertices);
+		}
+
+		oldMatrix = mMatrix;
+
+		setMatrixUniforms();
 	}
-
-	oldMatrix = mMatrix;
-
-	setMatrixUniforms();
-
 }
 
+function divide_triangulo(v) {
+	var result = [];
+
+	var m1 = vec3((v[0]+v[3])/2, (v[1]+v[4])/2, (v[2]+v[5])/2);
+	var m2 = vec3((v[0]+v[6])/2, (v[1]+v[7])/2, (v[2]+v[8])/2);
+	var m3 = vec3((v[3]+v[6])/2, (v[4]+v[7])/2, (v[5]+v[8])/2);
+
+	// === Triangulo de cima ===
+	result.push(vec3(v[0], v[1], v[2]));
+	result.push(normalize(m1));
+	result.push(normalize(m2));
+
+	// === Triangulo da esquerda ===
+	result.push(normalize(m1));
+	result.push(vec3(v[3], v[4], v[5]));
+	result.push(normalize(m3));
+
+	// === Triangulo da esquerda ===
+	result.push(normalize(m2));
+	result.push(normalize(m3));
+	result.push(vec3(v[6], v[7], v[8]));
+
+	return flatten(result);
+}
+
+function divide_poligono(v) {
+	var result = [];
+	for (var i = 0; i+9 <= v.length; i += 9)
+		result.push(divide_triangulo(v.slice(i, i+9)));
+
+	var vertices = flatten(result);
+	piramideVertexPositionBuffer.vertices = vertices;
+	piramideVertexPositionBuffer.numItems = vertices.length / piramideVertexPositionBuffer.itemSize;
+
+	var cores = cria_cor(piramideVertexPositionBuffer.numItems);
+	piramideVertexColorBuffer.cores = cores;
+	piramideVertexColorBuffer.numItems = cores.length / piramideVertexColorBuffer.itemSize;
+}
+
+function desenha_poligono(vertices, cores, type) {
+	// Vertices
+	piramideVertexPositionBuffer.vertices = vertices;
+	piramideVertexPositionBuffer.numItems = vertices.length / piramideVertexPositionBuffer.itemSize;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexPositionBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, piramideVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Cores
+    piramideVertexColorBuffer.cores = cores;
+    piramideVertexColorBuffer.numItems = cores.length / piramideVertexColorBuffer.itemSize;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cores), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.drawArrays(type, 0, piramideVertexPositionBuffer.numItems); // wireframe
+}
+
+function cria_cor(numItems) {
+	var result = []
+	for (var i = 0; i < numItems; i++)
+		result.push(vec4(1.0, 1.0, 1.0, 1.0));
+
+	return flatten(result);
+}
