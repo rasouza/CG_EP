@@ -627,7 +627,7 @@ function flatten( v )
     var n = v.length;
     var elemsAreArrays = false;
 
-    if ( Array.isArray(v[0]) ) {
+    if ( Array.isArray(v[0]) || (v[0] instanceof Float32Array) ) {
         elemsAreArrays = true;
         n *= v[0].length;
     }
