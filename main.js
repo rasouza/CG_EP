@@ -277,6 +277,11 @@ function divide_triangulo(v) {
 	result.push(normalize(m3));
 	result.push(vec3(v[6], v[7], v[8]));
 
+    // === Triangulo do ===
+    result.push(normalize(m1));
+    result.push(normalize(m2));
+    result.push(normalize(m3));
+
 	return flatten(result);
 }
 
