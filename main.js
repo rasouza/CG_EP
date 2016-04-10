@@ -23,9 +23,6 @@ $(function() {
     iniciarBuffers(); // Enviar o triângulo e quadrado na GPU
     iniciarAmbiente(); // Definir background e cor do objeto
     tick();
-
-    console.log(piramideVertexPositionBuffer.vertices.slice(0,18));
-    console.log(getNormals(piramideVertexPositionBuffer.vertices));
 });	
 
 // shim layer with setTimeout fallback
@@ -233,6 +230,7 @@ function desenharCena() {
 
     // Envia o MVP para a GPU
     setMatrixUniforms();
+    console.log($("[name=pause]").is(':checked'));
     desenha_poligono(piramideVertexPositionBuffer.vertices, piramideVertexColorBuffer.cores, $("[name=mode]:checked").val());
     //gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);// smooth
     
