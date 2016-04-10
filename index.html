@@ -5,20 +5,33 @@
 	<script id="shader-vs" type="x-shader/x-vertex">
 		attribute vec3 aVertexPosition;
 		attribute vec4 aVertexColor;
+		attribute vec3 aVertexNormal;
+
 		uniform mat4 uMMatrix;
 		uniform mat4 uVMatrix;
-		uniform mat4 uPMatrix;
+		uniform mat4 uPMatrix;		
+
+		varying vec3 vNormal;
 		varying vec4 vColor;
+
 		void main(void) {
-			gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 2.0);
+			gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
+			vNormal = aVertexNormal;
 			vColor = aVertexColor;
 		}
 	</script>
 	<script id="shader-fs" type="x-shader/x-fragment">
 		precision mediump float;
+
+		varying vec3 vNormal;
 		varying vec4 vColor;
+
+		uniform vec3 uLightPosition;
+		uniform vec3 uCameraPosition;
+	
 		void main(void) {
-			gl_FragColor = vColor;
+			vec3 normal = normalize(vNormal);
+			gl_FragColor = vec4(vColor.rgb * dot(normal, -uLightPosition), 1.0);
 		}
 	</script>
 

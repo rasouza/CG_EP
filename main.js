@@ -3,10 +3,14 @@ var shaderProgram;
 
 var piramideVertexPositionBuffer;
 var piramideVertexColorBuffer;
+var piramideNormalBuffer;
 
 var mMatrix = mat4();
 var pMatrix = mat4();
 var vMatrix = mat4();
+
+var uLightPosition = vec3(0.0, 0.0, 1.0);
+var uCameraPosition = vec3(0.0, 0.0, -10.0);
 
 // Iniciar o ambiente quando a página for carregada
 $(function() {
@@ -20,6 +24,8 @@ $(function() {
     iniciarAmbiente(); // Definir background e cor do objeto
     tick();
 
+    console.log(piramideVertexPositionBuffer.vertices.slice(0,18));
+    console.log(getNormals(piramideVertexPositionBuffer.vertices));
 });	
 
 // shim layer with setTimeout fallback
@@ -41,7 +47,9 @@ function iniciarGL(canvas) {
     try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         gl.viewportWidth = canvas.width;
-        gl.viewportHeight = canvas.height;        
+        gl.viewportHeight = canvas.height;   
+
+        gl.viewport(0, 0, canvas.width, canvas.height);
     }
     catch (e) {
         if (!gl) console.log("Não pode inicializar WebGL, desculpe");
@@ -63,13 +71,27 @@ function iniciarShaders() {
 
     gl.useProgram(shaderProgram);
 
+    // Vertex Position
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
+    // Vertex Color
     shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-
     gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
+    // Normals
+    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+    // Light Position
+    shaderProgram.lightPosition = gl.getUniformLocation(shaderProgram, "uLightPosition");    
+    gl.uniform3fv(shaderProgram.lightPosition, uLightPosition);
+
+    // Camera Position
+    shaderProgram.cameraPosition = gl.getUniformLocation(shaderProgram, "uCameraPosition");    
+    gl.uniform3fv(shaderProgram.cameraPosition, uCameraPosition);
+
+    // MVP matrices
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
     shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
@@ -147,42 +169,50 @@ function iniciarBuffers() {
     piramideVertexColorBuffer.itemSize = 4;
     piramideVertexColorBuffer.cores = [
         // Frente
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
         //DIREITA
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
         //TRAZ
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
         //ESQUERDA
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
         
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
 
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
 
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
 
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
+        0.0, 1.0, 1.0, 1.0,
     ];
-    piramideVertexColorBuffer.numItems = piramideVertexColorBuffer.cores.length / 4;
+    piramideVertexColorBuffer.numItems = piramideVertexColorBuffer.cores.length / piramideVertexColorBuffer.itemSize;
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideVertexColorBuffer.cores), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    piramideNormalBuffer = gl.createBuffer();
+    piramideNormalBuffer.itemSize = 3;
+    piramideNormalBuffer.normals = getNormals(piramideVertexPositionBuffer.vertices);
+    piramideNormalBuffer.numItems = piramideNormalBuffer.normals.length / piramideNormalBuffer.itemSize;
+    gl.bindBuffer(gl.ARRAY_BUFFER, piramideNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideNormalBuffer.normals), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.normals, piramideNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 }
 
 function iniciarAmbiente() {
@@ -251,7 +281,7 @@ function pingar() {
 
 		oldMatrix = mMatrix;
 
-		setMatrixUniforms();
+		// setMatrixUniforms();
 	}
 }
 
@@ -277,12 +307,33 @@ function divide_triangulo(v) {
 	result.push(normalize(m3));
 	result.push(vec3(v[6], v[7], v[8]));
 
-    // === Triangulo do ===
+    // === Triangulo do meio ===
     result.push(normalize(m1));
     result.push(normalize(m2));
     result.push(normalize(m3));
 
 	return flatten(result);
+}
+
+function getNormals(v) {
+    var result = [];
+    var A, B, C;
+    var n1, n2, n3;
+
+    // Para cada triangulo, calcula o produto vetorial
+    for (var i = 0; i+9 <= v.length; i += 9) {
+        A = vec3(v[i], v[i+1], v[i+2]);
+        B = vec3(v[i+3], v[i+4], v[i+5]);
+        C = vec3(v[i+6], v[i+7], v[i+8]);
+
+        n1 = cross(subtract(B, A), subtract(C, A));
+        n2 = cross(subtract(A, B), subtract(C, B));
+        n3 = cross(subtract(A, C), subtract(B, C));
+
+        result.push(n1, n2, n3);
+    }
+
+    return flatten(result);
 }
 
 function divide_poligono(v) {
@@ -297,6 +348,10 @@ function divide_poligono(v) {
 	var cores = cria_cor(piramideVertexPositionBuffer.numItems);
 	piramideVertexColorBuffer.cores = cores;
 	piramideVertexColorBuffer.numItems = cores.length / piramideVertexColorBuffer.itemSize;
+
+    var normals = getNormals(piramideVertexPositionBuffer.vertices);
+    piramideNormalBuffer.normals = normals;
+    piramideNormalBuffer.numItems = normals.length;
 }
 
 function desenha_poligono(vertices, cores, type) {
@@ -308,6 +363,14 @@ function desenha_poligono(vertices, cores, type) {
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, piramideVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+    // Normais
+    piramideNormalBuffer.normals = vertices;
+    piramideNormalBuffer.numItems = piramideNormalBuffer.normals.length / piramideNormalBuffer.itemSize;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, piramideNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideNormalBuffer.normals), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, piramideNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
     // Cores
     piramideVertexColorBuffer.cores = cores;
     piramideVertexColorBuffer.numItems = cores.length / piramideVertexColorBuffer.itemSize;
@@ -316,13 +379,13 @@ function desenha_poligono(vertices, cores, type) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cores), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.drawArrays(type, 0, piramideVertexPositionBuffer.numItems); // wireframe
+    gl.drawArrays(type, 0, piramideVertexPositionBuffer.numItems);
 }
 
 function cria_cor(numItems) {
 	var result = []
 	for (var i = 0; i < numItems; i++)
-		result.push(vec4(1.0, 1.0, 1.0, 1.0));
+		result.push(vec4(0.0, 1.0, 1.0, 1.0));
 
 	return flatten(result);
 }
