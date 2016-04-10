@@ -15,15 +15,15 @@ var uCameraPosition = vec3(0.0, 0.0, -10.0);
 // Iniciar o ambiente quando a página for carregada
 $(function() {
     var canvas = $('#canvas')[0];
-    $(canvas).width(window.innerWidth);
-    $(canvas).height(window.innerHeight);
+    // $(canvas).width(window.innerWidth);
+    // $(canvas).height(window.innerHeight);
 
     iniciarGL(canvas); // Definir como um canvas 3D
     iniciarShaders(); // Obter e processar os Shaders
     iniciarBuffers(); // Enviar o triângulo e quadrado na GPU
     iniciarAmbiente(); // Definir background e cor do objeto
     tick();
-});	
+});
 
 // shim layer with setTimeout fallback
 window.requestAnimFrame = (function(){
@@ -44,7 +44,7 @@ function iniciarGL(canvas) {
     try {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         gl.viewportWidth = canvas.width;
-        gl.viewportHeight = canvas.height;   
+        gl.viewportHeight = canvas.height;
 
         gl.viewport(0, 0, canvas.width, canvas.height);
     }
@@ -81,11 +81,11 @@ function iniciarShaders() {
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 
     // Light Position
-    shaderProgram.lightPosition = gl.getUniformLocation(shaderProgram, "uLightPosition");    
+    shaderProgram.lightPosition = gl.getUniformLocation(shaderProgram, "uLightPosition");
     gl.uniform3fv(shaderProgram.lightPosition, uLightPosition);
 
     // Camera Position
-    shaderProgram.cameraPosition = gl.getUniformLocation(shaderProgram, "uCameraPosition");    
+    shaderProgram.cameraPosition = gl.getUniformLocation(shaderProgram, "uCameraPosition");
     gl.uniform3fv(shaderProgram.cameraPosition, uCameraPosition);
 
     // MVP matrices
@@ -122,38 +122,38 @@ function iniciarBuffers() {
     piramideVertexPositionBuffer.itemSize = 3;
     piramideVertexPositionBuffer.vertices = [
         // Frente
-         0.0 			, 1.0 , 0.0  			, 
+         0.0 			, 1.0 , 0.0  			,
         -Math.sqrt(0.5) , 0.0 , Math.sqrt(0.5)	,
          Math.sqrt(0.5) , 0.0 , Math.sqrt(0.5)  ,
 
         // Direita
-         0.0 			, 1.0 , 0.0  			, 
+         0.0 			, 1.0 , 0.0  			,
          Math.sqrt(0.5) , 0.0 ,  Math.sqrt(0.5) ,
          Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) ,
         // Trás
-         0.0 			, 1.0 , 0.0  			, 
-         Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) , 
+         0.0 			, 1.0 , 0.0  			,
+         Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) ,
         -Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) ,
         // Esquerda
-         0.0 			, 1.0 , 0.0  			,  
-        -Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) , 
+         0.0 			, 1.0 , 0.0  			,
+        -Math.sqrt(0.5) , 0.0 , -Math.sqrt(0.5) ,
         -Math.sqrt(0.5) , 0.0 ,  Math.sqrt(0.5) ,
 
         // Frente
-        0.0				, -1.0 , 0.0			, 
+        0.0				, -1.0 , 0.0			,
        -Math.sqrt(0.5)	,  0.0 , Math.sqrt(0.5) ,
         Math.sqrt(0.5)	,  0.0 , Math.sqrt(0.5) ,
         // Direita
-        0.0				, -1.0 , 0.0			, 
+        0.0				, -1.0 , 0.0			,
         Math.sqrt(0.5) ,  0.0 ,  Math.sqrt(0.5) ,
         Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) ,
         // Trás
-        0.0				, -1.0 , 0.0			, 
-        Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) , 
+        0.0				, -1.0 , 0.0			,
+        Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) ,
        -Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) ,
         // Esquerda
-        0.0				, -1.0 , 0.0			,  
-       -Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) , 
+        0.0				, -1.0 , 0.0			,
+       -Math.sqrt(0.5) ,  0.0 , -Math.sqrt(0.5) ,
        -Math.sqrt(0.5) ,  0.0 ,  Math.sqrt(0.5)
     ];
     piramideVertexPositionBuffer.numItems = piramideVertexPositionBuffer.vertices.length / piramideVertexPositionBuffer.itemSize;
@@ -181,7 +181,7 @@ function iniciarBuffers() {
         0.0, 1.0, 1.0, 1.0,
         0.0, 1.0, 1.0, 1.0,
         0.0, 1.0, 1.0, 1.0,
-        
+
         0.0, 1.0, 1.0, 1.0,
         0.0, 1.0, 1.0, 1.0,
         0.0, 1.0, 1.0, 1.0,
@@ -222,7 +222,7 @@ function iniciarAmbiente() {
 
     // Posiciona o tetraedro no topo da tela
     mMatrix = translate([0.0, 3.0, 0.0]);
-    
+
 }
 
 function desenharCena() {
@@ -233,7 +233,7 @@ function desenharCena() {
     console.log($("[name=pause]").is(':checked'));
     desenha_poligono(piramideVertexPositionBuffer.vertices, piramideVertexColorBuffer.cores, $("[name=mode]:checked").val());
     //gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);// smooth
-    
+
 }
 
 function setMatrixUniforms() {

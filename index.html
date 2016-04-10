@@ -9,7 +9,7 @@
 
 		uniform mat4 uMMatrix;
 		uniform mat4 uVMatrix;
-		uniform mat4 uPMatrix;		
+		uniform mat4 uPMatrix;
 
 		varying vec3 vNormal;
 		varying vec4 vColor;
@@ -28,10 +28,42 @@
 
 		uniform vec3 uLightPosition;
 		uniform vec3 uCameraPosition;
-	
+
 		void main(void) {
-			vec3 normal = normalize(vNormal);
-			gl_FragColor = vec4(vColor.rgb * dot(normal, -uLightPosition), 1.0);
+			vec3 L = normalize(uLightPosition);
+			 vec3 N = normalize(vNormal);
+
+			 //Lambert's cosine law
+			 float lambertTerm = dot(N,-L);
+
+			 //Ambient Term
+			 vec4 uLightAmbient = vec4(0.03,0.03,0.03,1.0);
+			 vec4 uLightDiffuse = vec4(1.0,1.0,1.0,1.0);
+			 vec4 uLightSpecular = vec4(1.0,1.0,1.0,1.0);
+			 vec4 uMaterialAmbient = vec4( 1.0,1.0,1.0,1.0);
+			 vec4 uMaterialDiffuse = vec4( 0.5,0.8,0.1,1.0);
+			 vec4 uMaterialSpecular = vec4( 1.0,1.0,1.0,1.0);
+
+			 vec4 LA = uLightAmbient * uMaterialAmbient;
+			 vec4 LD = vec4(0.0,0.0,0.0,1.0);
+			 vec4 LS = vec4(0.0,0.0,0.0,1.0);
+
+			 if(lambertTerm > 0.0) //only if lambertTerm is positive
+		     {
+		          LD = uLightDiffuse * uMaterialDiffuse * lambertTerm; //add diffuse term
+
+		          vec3 E = normalize(uCameraPosition);
+		          vec3 R = reflect(L, N);
+		          float specular = pow( max(dot(R, E), 0.0), 230.0);//uShininess
+
+		          LS = uLightSpecular * uMaterialSpecular * specular; //add specular term
+		     }
+
+		      //Final color
+			 vec4 finalColor = LA + LD + LS;
+			 finalColor.a = 1.0;
+
+			gl_FragColor = finalColor;
 		}
 	</script>
 
@@ -39,29 +71,27 @@
 	<script type="text/javascript" src="jquery-2.2.2.min.js"></script>
 	<script type="text/javascript" src="MV.js"></script>
 	<script type="text/javascript" src="main.js"></script>
-	
+
 	<link rel="stylesheet" href="main.css" type="text/css" />
 
 </head>
 
 <body>
 	<canvas id="canvas" width="500" height="500"></canvas>
-	
-	
-	
+
+
+
 	<nav id="menu">
 		<form>
 		  <input type="number" name="subdivision" placeholder="Divisoes"><br>
 		  <input type="number" name="subdivision" placeholder="Numero de objetos"><br>
-		  <input type="radio" name="mode" value="4" checked=""> Smooth<br>
-		  <input type="radio" name="mode" value="2"> Wireframe<br>
-		  <input type="radio" name="mode" value="4" > Smooth<br>
-		  <input type="radio" name="mode" value="2" checked> Wireframe<br>
+		  <input type="radio" name="mode" value="4" checked> Smooth<br>
+		  <input type="radio" name="mode" value="2" > Wireframe<br>
 		  <input type="checkbox" name="pause" value="pause">Pause<br>
 		</form>
 	</nav>
-	
-	
+
+
 </body>
 
 </html>
