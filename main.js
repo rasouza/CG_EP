@@ -233,8 +233,7 @@ function desenharCena() {
 
     // Envia o MVP para a GPU
     setMatrixUniforms();
-    
-    desenha_poligono(piramideVertexPositionBuffer.vertices, piramideVertexColorBuffer.cores, gl.TRIANGLES);
+    desenha_poligono(piramideVertexPositionBuffer.vertices, piramideVertexColorBuffer.cores, $("[name=mode]:checked").val());
     //gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);// smooth
     
 }
@@ -265,7 +264,7 @@ var h = 3;
 var speed = 0;
 var cont = 4; // Número maximo de pingos
 function pingar() {
-	if (cont > 0) {
+	if (cont > 0 && !$("[name=pause]").is(':checked')) {
 		speed += g*deltaT;
 
 		mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
