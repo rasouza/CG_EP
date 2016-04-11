@@ -2,8 +2,10 @@ var gl;
 var shaderProgram;
 
 var piramideVertexPositionBuffer;
-var piramideVertexColorBuffer;
 var piramideNormalBuffer;
+
+var chaoPositionBuffer;
+var chaoNormalBuffer;
 
 var mMatrix = mat4();
 var pMatrix = mat4();
@@ -23,6 +25,8 @@ $(function() {
     iniciarBuffers(); // Enviar o triângulo e quadrado na GPU
     iniciarAmbiente(); // Definir background e cor do objeto
     tick();
+
+    console.log(chaoNormalBuffer.normals);
 });
 
 // shim layer with setTimeout fallback
@@ -72,10 +76,6 @@ function iniciarShaders() {
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
-    // Vertex Color
-    shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-    gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-
     // Normals
     shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
     gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
@@ -118,6 +118,9 @@ function getShader(gl, id) {
 }
 
 function iniciarBuffers() {
+
+
+	// Vertices da piramide
     piramideVertexPositionBuffer = gl.createBuffer();
     piramideVertexPositionBuffer.itemSize = 3;
     piramideVertexPositionBuffer.vertices = [
@@ -161,48 +164,7 @@ function iniciarBuffers() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideVertexPositionBuffer.vertices), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, piramideVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-
-    piramideVertexColorBuffer = gl.createBuffer();
-    piramideVertexColorBuffer.itemSize = 4;
-    piramideVertexColorBuffer.cores = [
-        // Frente
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        //DIREITA
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        //TRAZ
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        //ESQUERDA
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-        0.0, 1.0, 1.0, 1.0,
-    ];
-    piramideVertexColorBuffer.numItems = piramideVertexColorBuffer.cores.length / piramideVertexColorBuffer.itemSize;
-    gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideVertexColorBuffer.cores), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
+    // Normais da piramide
     piramideNormalBuffer = gl.createBuffer();
     piramideNormalBuffer.itemSize = 3;
     piramideNormalBuffer.normals = getNormals(piramideVertexPositionBuffer.vertices);
@@ -210,11 +172,37 @@ function iniciarBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, piramideNormalBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideNormalBuffer.normals), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.normals, piramideNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+
+    // Vertices do chao
+    chaoPositionBuffer = gl.createBuffer();
+    chaoPositionBuffer.itemSize = 3;
+    chaoPositionBuffer.vertices = [
+	    2.0, 0.0, 2.0,
+	    2.0, 0.0, -2.0,
+	    -2.0, 0.0, -2.0,
+
+	    -2.0, 0.0, -2.0,
+	    -2.0, 0.0, 2.0,
+	    2.0, 0.0, 2.0,
+    ];
+    chaoPositionBuffer.numItems = chaoPositionBuffer.vertices.length / chaoPositionBuffer.itemSize;
+    gl.bindBuffer(gl.ARRAY_BUFFER, chaoPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(chaoPositionBuffer.vertices), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, chaoPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Normais do chao
+    chaoNormalBuffer = gl.createBuffer();
+    chaoNormalBuffer.itemSize = 3;
+    chaoNormalBuffer.normals = getNormals(chaoPositionBuffer.vertices);
+    chaoNormalBuffer.numItems = chaoNormalBuffer.normals.length / chaoNormalBuffer.itemSize;
+    gl.bindBuffer(gl.ARRAY_BUFFER, chaoNormalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(chaoNormalBuffer.normals), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.normals, chaoNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 }
 
 function iniciarAmbiente() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.enable(gl.DEPTH_TEST);
 
     // Posiciona a câmera para visualizar o tetraedro
     pMatrix = perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
@@ -226,13 +214,17 @@ function iniciarAmbiente() {
 }
 
 function desenharCena() {
+	gl.enable(gl.DEPTH_TEST);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Envia o MVP para a GPU
     setMatrixUniforms();
-    console.log($("[name=pause]").is(':checked'));
-    desenha_poligono(piramideVertexPositionBuffer.vertices, piramideVertexColorBuffer.cores, $("[name=mode]:checked").val());
-    //gl.drawArrays(gl.TRIANGLES, 0, piramideVertexPositionBuffer.numItems);// smooth
+
+    desenha_chao(chaoPositionBuffer, $("[name=mode]:checked").val());
+	
+	setMatrixUniforms();    
+    
+    desenha_poligono(piramideVertexPositionBuffer.vertices, $("[name=mode]:checked").val());
 
 }
 
@@ -263,6 +255,8 @@ var speed = 0;
 var cont = 4; // Número maximo de pingos
 function pingar() {
 	if (cont > 0 && !$("[name=pause]").is(':checked')) {
+		g = $('[name=gravity]').val()/-10.0;
+
 		speed += g*deltaT;
 
 		mMatrix = mult(mMatrix, translate([0.0, speed, 0.0]));
@@ -274,6 +268,7 @@ function pingar() {
 	    	cont--;
 
 	    	divide_poligono(piramideVertexPositionBuffer.vertices);
+	    	$("#divisions").text(piramideVertexPositionBuffer.numItems);
 		}
 
 		oldMatrix = mMatrix;
@@ -327,7 +322,7 @@ function getNormals(v) {
         n2 = cross(subtract(A, B), subtract(C, B));
         n3 = cross(subtract(A, C), subtract(B, C));
 
-        result.push(n1, n2, n3);
+        result.push(normalize(n1), normalize(n2), normalize(n3));
     }
 
     return flatten(result);
@@ -342,16 +337,12 @@ function divide_poligono(v) {
 	piramideVertexPositionBuffer.vertices = vertices;
 	piramideVertexPositionBuffer.numItems = vertices.length / piramideVertexPositionBuffer.itemSize;
 
-	var cores = cria_cor(piramideVertexPositionBuffer.numItems);
-	piramideVertexColorBuffer.cores = cores;
-	piramideVertexColorBuffer.numItems = cores.length / piramideVertexColorBuffer.itemSize;
-
     var normals = getNormals(piramideVertexPositionBuffer.vertices);
     piramideNormalBuffer.normals = normals;
     piramideNormalBuffer.numItems = normals.length;
 }
 
-function desenha_poligono(vertices, cores, type) {
+function desenha_poligono(vertices, type) {
 	// Vertices
 	piramideVertexPositionBuffer.vertices = vertices;
 	piramideVertexPositionBuffer.numItems = vertices.length / piramideVertexPositionBuffer.itemSize;
@@ -368,21 +359,16 @@ function desenha_poligono(vertices, cores, type) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(piramideNormalBuffer.normals), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, piramideNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    // Cores
-    piramideVertexColorBuffer.cores = cores;
-    piramideVertexColorBuffer.numItems = cores.length / piramideVertexColorBuffer.itemSize;
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, piramideVertexColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cores), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, piramideVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
     gl.drawArrays(type, 0, piramideVertexPositionBuffer.numItems);
 }
 
-function cria_cor(numItems) {
-	var result = []
-	for (var i = 0; i < numItems; i++)
-		result.push(vec4(0.0, 1.0, 1.0, 1.0));
+function desenha_chao(chaoBuffer, type) {
+	gl.bindBuffer(gl.ARRAY_BUFFER, chaoBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, chaoBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	return flatten(result);
+	var mChaoMatrix = mat4();
+	mChaoMatrix = translate([0.0, -4.5, 0.0])
+	gl.uniformMatrix4fv(shaderProgram.mMatrixUniform, false, flatten(mChaoMatrix));
+
+	gl.drawArrays(type, 0, chaoBuffer.numItems);
 }
