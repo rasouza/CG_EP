@@ -1,93 +1,40 @@
 <html>
 
-<head>
-	<meta charset="utf-8" />
-	<script id="shader-vs" type="x-shader/x-vertex">
-		attribute vec3 aVertexPosition;
-		attribute vec3 aVertexNormal;
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
 
-		uniform mat4 uMMatrix;
-		uniform mat4 uVMatrix;
-		uniform mat4 uPMatrix;
+		<!--Libs-->
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/MV.js"></script>
+		<script type="text/javascript" src="js/utils.js"></script>
+		
+	</head>
 
-		varying vec3 vNormal;
+	<body>
+		<canvas id="canvas" width="500" height="500"></canvas>
 
-		void main(void) {
-			gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
-			vNormal = aVertexNormal;
-		}
-	</script>
-	<script id="shader-fs" type="x-shader/x-fragment">
-		precision mediump float;
+		<!-- Invoca OpenGL em um scopo global -->
+		<script type='text/javascript' > 
+			var gl;
+			var canvas = $('#canvas')[0];
+		    try {
+		        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+		        gl.viewportWidth = canvas.width;
+		        gl.viewportHeight = canvas.height;
 
-		varying vec3 vNormal;
+		        gl.viewport(0, 0, canvas.width, canvas.height);
+		    } catch (e) {
+		        if (!gl) console.log("Não pode inicializar WebGL, desculpe");
+		    }
+		</script>
 
-		uniform vec3 uLightPosition;
-		uniform vec3 uCameraPosition;
-
-		void main(void) {
-			vec3 L = normalize(uLightPosition);
-			vec3 N = normalize(vNormal);
-
-			//Lambert's cosine law
-			float lambertTerm = dot(N,-L);
-
-			//Ambient Term
-			vec4 uLightAmbient = vec4(0.03,0.03,0.03,1.0);
-			vec4 uLightDiffuse = vec4(1.0,1.0,1.0,1.0);
-			vec4 uLightSpecular = vec4(1.0,1.0,1.0,1.0);
-			vec4 uMaterialAmbient = vec4( 1.0,1.0,1.0,1.0);
-			vec4 uMaterialDiffuse = vec4( 0.5,0.8,0.1,1.0);
-			vec4 uMaterialSpecular = vec4( 1.0,1.0,1.0,1.0);
-
-			vec4 LA = uLightAmbient * uMaterialAmbient;
-			vec4 LD = vec4(0.0,0.0,0.0,1.0);
-			vec4 LS = vec4(0.0,0.0,0.0,1.0);
-
-			if(lambertTerm > 0.0) //only if lambertTerm is positive
-			{
-				LD = uLightDiffuse * uMaterialDiffuse * lambertTerm; //add diffuse term
-
-				vec3 E = normalize(uCameraPosition);
-				vec3 R = reflect(L, N);
-				float specular = pow( max(dot(R, E), 0.0), 230.0);//uShininess
-
-				LS = uLightSpecular * uMaterialSpecular * specular; //add specular term
-			}
-
-			//Final color
-			vec4 finalColor = LA + LD + LS;
-			finalColor.a = 1.0;
-
-			gl_FragColor = finalColor;
-		}
-	</script>
-
-	<!--Funções-->
-	<script type="text/javascript" src="jquery-2.2.2.min.js"></script>
-	<script type="text/javascript" src="MV.js"></script>
-	<script type="text/javascript" src="main.js"></script>
-
-	<link rel="stylesheet" href="main.css" type="text/css" />
-
-</head>
-
-<body>
-	<canvas id="canvas" width="500" height="500"></canvas>
-
-
-
-	<nav id="menu">
-		<form>
-		  Divisões: <span id="divisions">24</span><br>
-		  <input type="number" name="gravity" placeholder="Gravidade" value="10" style="width: 50px">m/s²<br>
-		  <input type="radio" name="mode" value="4" checked> Smooth<br>
-		  <input type="radio" name="mode" value="2" > Wireframe<br>
-		  <input type="checkbox" name="pause" value="pause">Pause<br>
-		</form>
-	</nav>
-
-
-</body>
+		<script type="text/javascript" src="class/pingar.anim.js"></script>
+		<script type="text/javascript" src="class/actor.js"></script>
+		<script type="text/javascript" src="class/sphere.js"></script>
+		<script type="text/javascript" src="class/camera.js"></script>
+		<script type="text/javascript" src="js/events.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+	</body>
 
 </html>

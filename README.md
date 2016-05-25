@@ -1,16 +1,21 @@
-# Computação Gráfica - EP1
-Animação de um tetraedro em queda livre. Ao colidir com o chão, o tetraedro se divide até formar uma esfera
+# Computação Gráfica - EP2
+Neste exerc´ıcio-programa, vocˆe recriar´a um mundo com criaturas simples que vagam em um universo
+restrito.
 
 ## Integrantes
-- Rodrigo Alves Souza (6800149)
 - Claudio Fernandes da Silva Filho (7158472)
+- Rodrigo Alves Souza (6800149)
 
 ## Guia do usuário
-A animação é feita em WebGL dentro de um canvas HTML5 com o uso de jQuery para os controles da animação. Para controlar a animação basta mexer na interface no canto superior direito da tela. É possível pausar a animação, alterar a gravidade, o tipo de renderização e acompanhar o número de vértices do modelo.
+A animação é feita em WebGL dentro de um canvas HTML5 com o uso de jQuery para os controles da animação.
 
 ## Componentes
-- **jQuery 2.2** biblioteca javascript para controle da interface de animação
+- **jQuery** biblioteca javascript para controle da interface de animação
 - **MV.js** funções auxiliares para manipulação de vetores e pontos no espaço
-- **Shaders** no código fonte do index.html para renderização utilizando a GPU
+- **utils.js** funções auxiliares para manipulação de arquivos
+- **shader-vs.gl** shader vertice
+- **shader-fs.gl** shader fragment
 - **main.css** CSS para criação de uma UI amigável na página
-- **main.js** arquivo javascript principal da animação
+- **main.js** arquivo javascript do projeto
+- **actor.js** arquivo javascript contem a classe dos objetos
+- **pingar.anim.js** arquivo javascript contem a classe responsabel por uma animação "Pingar"
