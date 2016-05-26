@@ -72,8 +72,6 @@ Actor.prototype.update = function() {
 
 
 Actor.prototype.animationUpdate = function(deltaT,propagation = null) {
-	
-
     // controle de animacao
     this.time += 0.01;
     this.timeFilho += 0.01;

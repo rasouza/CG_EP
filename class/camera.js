@@ -1,7 +1,7 @@
-var Camera = function() {
+var Camera = function(pos) {
 	// Inicializadores
-	this.position = vec3(0.0, 0.0, -10.0);
-	this.view = translate([0, 0.0, -20.0]);
+	this.position = pos;
+	this.view = mat4();
 	this.projection = perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 }
 

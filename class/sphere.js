@@ -1,4 +1,14 @@
 var Sphere = function() {
+
+    // Material
+    this.ambient = vec4(1.0,1.0,1.0,1.0);
+    this.diffuse = vec4(0.5,0.8,0.1,1.0);
+    this.specular = vec4(1.0,1.0,1.0,1.0);
+    gl.uniform4fv(shaderProgram.materialAmbient, this.ambient);
+    gl.uniform4fv(shaderProgram.materialDiffuse, this.diffuse);
+    gl.uniform4fv(shaderProgram.materialSpecular, this.specular);
+
+    // Polys
 	this.vertices = [
         // Frente
          0.0            , 1.0 , 0.0             ,
@@ -39,9 +49,8 @@ var Sphere = function() {
     this.children = [];
 
 };
+
 Sphere.prototype = new Actor();// determina a heranca
 Sphere.prototype.constructor = Sphere;// corrige contrutor para sphere
 
-Sphere.prototype.log = function() {
-	console.log(this.vertices);
-};
+Sphere.prototype.log = function() {	console.log(this.vertices); };

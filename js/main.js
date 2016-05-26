@@ -4,7 +4,7 @@ var shader_fs;
 var shaderProgram;
 
 // CAMERA E CENA 
-var uLightPosition = vec3(0.0, 0.0, 1.0);
+var light;
 var camera;
 
         //=================== tentativa de lidar com a camera ===========
@@ -23,9 +23,6 @@ var camera;
         //=================== tentativa de lidar com a camera ===========
 
 
-// CONTROLE DA ANIMACAO
-var last = 0;
-var deltaTime = 0;
 
 // OBJETOS DA CENA
 var objects = [];
@@ -89,64 +86,13 @@ function Update() {
         objects[i].update();
 }
 
-function AnimationUpdate() {
-    var now = new Date().getTime();
 
-    if (last != 0) { // ignora o primeiro frame
-        deltaTime = (now - last) / 1000;
-
-        // ATUALIZA ANIMAÇÃO DO OBJETO
-        for (var i = 0; i < objects.length; i++)
-            objects[i].animationUpdate(deltaTime);
-
-
-
-
-        //=================== tentativa de lidar com a camera ===========
-        if (speed != 0) {
-            xPos -= Math.sin(radians(yaw)) * speed * deltaTime;
-            zPos -= Math.cos(radians(yaw)) * speed * deltaTime;
-
-            joggingAngle += deltaTime * 0.6; // 0.6 "fiddle factor" -- makes it feel more realistic :-)
-            yPos = Math.sin(radians(joggingAngle)) / 20 + 0.4;
-        }
-
-        yaw += yawRate * deltaTime;
-        pitch += pitchRate * deltaTime;
-        //=================== tentativa de lidar com a camera ===========
-
-
-
-    }
-
-
-
-    last = now;
-    Update();
-}
-
-
-// ======================================
-window.requestAnimFrame = (function() {
-    return window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        function(callback) {
-            window.setTimeout(callback, 1000 / 60);
-        };
-})();
 
 function init() {
-    // iniciarGL(); // Definir como um canvas 3D
     iniciarEnv(); // Camera, Luz, Terreno, etc.
     iniciarShaders(); // Obter e processar os Shaders
     Start(); // Definir background e cor do objeto
     tick();
-}
-
-function tick() {
-    requestAnimFrame(tick);
-    AnimationUpdate();
 }
 
 function iniciarGL() {
@@ -187,7 +133,18 @@ function iniciarShaders() {
 
     // Light Position
     shaderProgram.lightPosition = gl.getUniformLocation(shaderProgram, "uLightPosition");
-    gl.uniform3fv(shaderProgram.lightPosition, uLightPosition);
+    shaderProgram.lightAmbient = gl.getUniformLocation(shaderProgram, "uLightAmbient");
+    shaderProgram.lightDiffuse = gl.getUniformLocation(shaderProgram, "uLightDiffuse");
+    shaderProgram.lightSpecular = gl.getUniformLocation(shaderProgram, "uLightSpecular");
+    gl.uniform3fv(shaderProgram.lightPosition, light.position);
+    gl.uniform4fv(shaderProgram.lightAmbient, light.ambient);
+    gl.uniform4fv(shaderProgram.lightDiffuse, light.diffuse);
+    gl.uniform4fv(shaderProgram.lightSpecular, light.specular);
+
+    // Material Position
+    shaderProgram.materialAmbient = gl.getUniformLocation(shaderProgram, "uMaterialAmbient");
+    shaderProgram.materialDiffuse = gl.getUniformLocation(shaderProgram, "uMaterialDiffuse");
+    shaderProgram.materialSpecular = gl.getUniformLocation(shaderProgram, "uMaterialSpecular");
 
     // Camera Position
     shaderProgram.cameraPosition = gl.getUniformLocation(shaderProgram, "uCameraPosition");
@@ -200,20 +157,23 @@ function iniciarShaders() {
 }
 
 function iniciarEnv() {
-    camera = new Camera();
+    camera = new Camera(vec3(0.0, 0.0, -10.0));
+    camera.translate([0, 0.0, -18.0]); // Leva a camera para longe da cena
+    light = new Light(vec3(0.0, 0.0, 1.0));
 }
 
 function getShader(gl, type) {
     var shaderScript;
+    var shader;
+
     if (type == "fs")
         shaderScript = shader_fs
     else
         shaderScript = shader_vs
 
-
     if (!shaderScript) return null;
 
-    var shader;
+    
     if (type == "fs") shader = gl.createShader(gl.FRAGMENT_SHADER);
     else if (type == "vs") shader = gl.createShader(gl.VERTEX_SHADER);
     else return null;

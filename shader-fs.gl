@@ -5,20 +5,20 @@ varying vec3 vNormal;
 uniform vec3 uLightPosition;
 uniform vec3 uCameraPosition;
 
+uniform vec4 uLightAmbient;
+uniform vec4 uLightDiffuse;
+uniform vec4 uLightSpecular;
+
+uniform vec4 uMaterialAmbient;
+uniform vec4 uMaterialDiffuse;
+uniform vec4 uMaterialSpecular;
+
 void main(void) {
 	vec3 L = normalize(uLightPosition);
 	vec3 N = normalize(vNormal);
 
 	//Lambert's cosine law
 	float lambertTerm = dot(N,-L);
-
-	//Ambient Term
-	vec4 uLightAmbient = vec4(0.03,0.03,0.03,1.0);
-	vec4 uLightDiffuse = vec4(1.0,1.0,1.0,1.0);
-	vec4 uLightSpecular = vec4(1.0,1.0,1.0,1.0);
-	vec4 uMaterialAmbient = vec4( 1.0,1.0,1.0,1.0);
-	vec4 uMaterialDiffuse = vec4( 0.5,0.8,0.1,1.0);
-	vec4 uMaterialSpecular = vec4( 1.0,1.0,1.0,1.0);
 
 	vec4 LA = uLightAmbient * uMaterialAmbient;
 	vec4 LD = vec4(0.0,0.0,0.0,1.0);
