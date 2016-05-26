@@ -12,6 +12,6 @@ varying vec3 vNormal;
 
 void main(void) {
 	gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);
-	vNormal = aVertexNormal;
+	vNormal = mat3(uMMatrix)*aVertexNormal;
 	textureCoord = vTextureCoord;
 }
