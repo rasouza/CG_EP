@@ -29,9 +29,9 @@ var objects = [];
 
 // QUANDO O DOCUMENTO ESTIVER PRONTO INICIA O SISTEMA
 $(function() {
-    loadTextFile("shader-vs.gl", function(textv) {
+    loadTextFile("shader-vs.glsl", function(textv) {
         shader_vs = textv;
-        loadTextFile("shader-fs.gl", function(textf) {
+        loadTextFile("shader-fs.glsl", function(textf) {
             shader_fs = textf;
             init();
         });
@@ -145,6 +145,10 @@ function iniciarShaders() {
     shaderProgram.materialAmbient = gl.getUniformLocation(shaderProgram, "uMaterialAmbient");
     shaderProgram.materialDiffuse = gl.getUniformLocation(shaderProgram, "uMaterialDiffuse");
     shaderProgram.materialSpecular = gl.getUniformLocation(shaderProgram, "uMaterialSpecular");
+    
+    // Texture
+    shaderProgram.textureCoord = gl.getAttribLocation(shaderProgram, "textureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCord);
 
     // Camera Position
     shaderProgram.cameraPosition = gl.getUniformLocation(shaderProgram, "uCameraPosition");
@@ -160,6 +164,22 @@ function iniciarEnv() {
     camera = new Camera(vec3(0.0, 0.0, -10.0));
     camera.translate([0, 0.0, -18.0]); // Leva a camera para longe da cena
     light = new Light(vec3(0.0, 0.0, 1.0));
+
+    // Texturas
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+
+    // Asynchronously load an image
+    var image = new Image();
+    image.src = "textures/wood.png";
+    image.addEventListener('load', function() {
+        // Now that the image has loaded make copy it to the texture.
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    });
 }
 
 function getShader(gl, type) {

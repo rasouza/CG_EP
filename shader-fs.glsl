@@ -1,5 +1,8 @@
 precision mediump float;
 
+varying vec2 textureCoord;
+uniform sampler2D uTexture;
+
 varying vec3 vNormal;
 
 uniform vec3 uLightPosition;
@@ -38,6 +41,9 @@ void main(void) {
 	//Final color
 	vec4 finalColor = LA + LD + LS;
 	finalColor.a = 1.0;
+	
 
-	gl_FragColor = finalColor;
+	vec4 textureColor = texture2D(uTexture, textureCoord);
+	gl_FragColor = textureColor;
+	// gl_FragColor = vec4(textureColor.rgb * finalColor.rgb, textureColor.a);
 }

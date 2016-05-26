@@ -2,13 +2,15 @@
 var Actor = function() {
 	// VARIAVEIS DE SHADER 
     this.vertexPositionBuffer;
-	this.normalBuffer;
+    this.normalBuffer;
+	this.textureBuffer;
 	this.mMatrix = mat4();
 	this.shaderProgram;
 
 	// VARIAVEIS DO OBJETO
     this.vertices;
     this.normals;
+    this.texture;
     this.animation = null;
     this.children = [];
 
@@ -35,6 +37,15 @@ Actor.prototype.inicializaBuffer = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normalBuffer.normals), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.normals, this.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Textura
+    this.textureBuffer = gl.createBuffer();
+    this.textureBuffer.itemSize = 2;
+    this.textureBuffer.coords = this.texture;
+    this.textureBuffer.numItems = this.textureBuffer.coords.length / this.textureBuffer.itemSize;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textureBuffer.coords), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(shaderProgram.textureCord, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 };
 
 Actor.prototype.inicializaObjeto = function(x=0,y=0,z=0) {

@@ -46,6 +46,49 @@ var Sphere = function() {
        -Math.sqrt(0.5) ,  0.0 ,  Math.sqrt(0.5)
     ];
 
+    // Texture
+    this.texture = [
+        // Frente
+        0, 0.5,
+        1, 0.5,
+        0, 1,
+
+        // Direita
+        0, 1,
+        0, 1,
+        0, 1,
+
+        // Trás
+        0, 1,
+        0, 1,
+        0, 1,
+
+        // Esquerda
+        0, 1,
+        0, 1,
+        0, 1,
+
+        // Frente
+        0, 1,
+        0, 1,
+        0, 1,
+
+        // Direita
+        0, 1,
+        0, 1,
+        0, 1,
+
+        // Trás
+        0, 1,
+        0, 1,
+        0, 1,
+
+        // Esquerda
+        0, 1,
+        0, 1,
+        0, 1,
+    ];
+
     this.children = [];
 
 };
