@@ -4,6 +4,7 @@ var shader_fs;
 var shaderProgram;
 
 // CAMERA E CENA 
+var texture;
 var light;
 var camera;
 
@@ -147,8 +148,8 @@ function iniciarShaders() {
     shaderProgram.materialSpecular = gl.getUniformLocation(shaderProgram, "uMaterialSpecular");
     
     // Texture
-    shaderProgram.textureCoord = gl.getAttribLocation(shaderProgram, "textureCoord");
-    gl.enableVertexAttribArray(shaderProgram.textureCord);
+    shaderProgram.textureCoord = gl.getAttribLocation(shaderProgram, "vTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoord);
 
     // Camera Position
     shaderProgram.cameraPosition = gl.getUniformLocation(shaderProgram, "uCameraPosition");
@@ -166,19 +167,16 @@ function iniciarEnv() {
     light = new Light(vec3(0.0, 0.0, 1.0));
 
     // Texturas
-    var texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    // Fill the texture with a 1x1 blue pixel.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
-
-    // Asynchronously load an image
-    var image = new Image();
-    image.src = "textures/f.png";
-    image.addEventListener('load', function() {
-        // Now that the image has loaded make copy it to the texture.
+    texture = gl.createTexture();    
+    texture.image = new Image();
+    texture.image.src = "textures/f.png";
+    texture.image.addEventListener('load', function() {
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.bindTexture(gl.TEXTURE_2D, null);
     });
 }
 

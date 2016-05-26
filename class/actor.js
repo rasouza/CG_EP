@@ -45,7 +45,7 @@ Actor.prototype.inicializaBuffer = function() {
     this.textureBuffer.numItems = this.textureBuffer.coords.length / this.textureBuffer.itemSize;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.textureBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textureBuffer.coords), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(shaderProgram.textureCord, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.textureCoord, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 };
 
 Actor.prototype.inicializaObjeto = function(x=0,y=0,z=0) {
@@ -71,6 +71,12 @@ Actor.prototype.update = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normalBuffer.normals), gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, this.normalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    // Textura
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram, "uSampler"), 0);
+    gl.vertexAttribPointer(shaderProgram.textureCoord, this.textureBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     gl.drawArrays(4, 0, this.vertexPositionBuffer.numItems);
 
