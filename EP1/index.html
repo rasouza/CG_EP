@@ -1,0 +1,46 @@
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>Computação Gráfica - EP2</title>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+
+		<!--Libs-->
+		<script type="text/javascript" src="libs/jquery.js"></script>
+		<script type="text/javascript" src="libs/MV.js"></script>
+		<script type="text/javascript" src="libs/utils.js"></script>
+		
+	</head>
+
+	<body>
+		<canvas id="canvas" width="500" height="500"></canvas>
+
+		<!-- Invoca OpenGL em um scopo global -->
+		<script type='text/javascript' > 
+			var gl;
+			var canvas = $('#canvas')[0];
+		    try {
+		        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+		        gl.viewportWidth = canvas.width;
+		        gl.viewportHeight = canvas.height;
+
+		        gl.viewport(0, 0, canvas.width, canvas.height);
+		    } catch (e) {
+		        if (!gl) console.log("Não pode inicializar WebGL, desculpe");
+		    }
+		</script>
+
+		<!-- Classes -->
+		<script type="text/javascript" src="class/pingar.anim.js"></script>
+		<script type="text/javascript" src="class/actor.js"></script>
+		<script type="text/javascript" src="class/sphere.js"></script>
+		<script type="text/javascript" src="class/camera.js"></script>
+		<script type="text/javascript" src="class/light.js"></script>
+
+		<!-- Controles -->
+		<script type="text/javascript" src="js/events.js"></script>
+		<script type="text/javascript" src="js/animation.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
+	</body>
+
+</html>

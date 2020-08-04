@@ -1,0 +1,69 @@
+html,body{
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	color: black;
+}
+
+#perfil, #trajetoria, #solido{
+	position: fixed;	
+}
+
+#perfil{
+	left:0%;
+	top: 30px;
+}
+
+#trajetoria{
+	left: 33.5%;
+	top: 30px;
+}
+
+#solido{
+	right:0%;
+	top: 30px;
+}
+
+#controlBar{
+	position:fixed;
+}
+
+#perfilBar{
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 67%;
+	height: 19px;
+	background: #666;
+	padding: 5px;
+}
+
+.bspline .rag,
+.rag .bspline{
+	display:none;
+}
+
+#trajetoriaBar{
+	position: fixed;
+	top: 0px;
+	left: 33.5%;
+	right: 33.5%;
+	height: 19px;
+	background: #666;
+	padding: 5px;
+}
+
+#solidBar{
+	position: fixed;
+	top: 0px;
+	left: 67%;
+	right: 0%;
+	height: 19px;
+	background: #666;
+	padding: 5px;
+}
+
+input[type=number]{
+	width: 50px;
+	text-align:center;
+}

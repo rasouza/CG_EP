@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CURVES</title>
+		<link href="curves.css" type="text/css" rel="stylesheet"/>
+
+		
+		<script id="3d-vertex-shader" type="x-shader/x-vertex">
+			precision highp float;
+			
+			attribute  vec3 vPosition;
+
+			uniform float pointSize;
+			
+			uniform mat4 modelViewMatrix;
+			uniform mat4 projectionMatrix;
+
+			void main()
+			{
+				gl_PointSize = pointSize;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition,1.0);
+			}
+		</script>
+		
+		<script id="2d-vertex-shader" type="x-shader/x-vertex">
+			precision highp float;
+			
+			attribute  vec2 vPosition;
+
+			uniform float pointSize;
+			
+			uniform mat4 modelViewMatrix;
+			uniform mat4 projectionMatrix;
+
+			void main()
+			{
+				gl_PointSize = pointSize;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition,0.0,1.0);
+			}
+		</script>
+
+		<script id="2d-fragment-shader" type="x-shader/x-fragment">
+
+			precision highp float;
+
+			uniform vec4 color;
+			
+			void main()
+			{
+				gl_FragColor = color;
+			}
+			
+		</script>
+
+		<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+		<script type="text/javascript" src="../Common/initShaders.js"></script>
+		<script type="text/javascript" src="../Common/MV.js"></script>
+
+		<script type="text/javascript" src="Screen.js"></script>
+		<script type="text/javascript" src="PerfilCurves.js"></script>
+		<script type="text/javascript" src="PerfilScreen.js"></script>
+		<script type="text/javascript" src="TrajetoriaCurves.js"></script>
+		<script type="text/javascript" src="TrajetoriaScreen.js"></script>
+		<script type="text/javascript" src="ExtrusaoSolid.js"></script>
+		<script type="text/javascript" src="ExtrusaoScreen.js"></script>
+		<script type="text/javascript" src="curves.js"></script>
+
+	</head>
+
+	<body>
+	
+	<canvas id="trajetoria"></canvas>
+	<canvas id="perfil"></canvas>
+	<canvas id="solido"></canvas>
+	
+	<div id="perfilBar" class="bspline">
+		<button id="zerarPerfil">Zerar CP</button>
+		<select id="tipoPerfil">
+			<option value="bspline">B-Spline</option>
+			<option value="rag">RaG</option>
+		</select>
+		<label for="segmentosPerfil">Seguimentos: <input type="number" id="segmentosPerfil" min="3" value="10"/></label>
+		<label class="bspline" for="grauPerfil">Grau: <input type="number" id="grauPerfil" min="2" value="4"/></label>
+		<label class="rag" for="sigmaPerfil">Sigma: <input type="number" id="sigmaPerfil" min="0.01" max="1" step="0.01" value="0.1"/></label>
+	</div>
+	<div id="trajetoriaBar" class="bspline">
+		<button id="zerarTrajetoria">Zerar CP</button>
+		<select id="tipoTrajetoria">
+			<option value="bspline">B-Spline</option>
+			<option value="rag">RaG</option>
+		</select>
+		<label for="segmentosTrajetoria">Seguimentos: <input type="number" id="segmentosTrajetoria" min="1" value="10"/></label>
+		<label class="bspline" for="grauTrajetoria">Grau: <input type="number" id="grauTrajetoria" min="2" value="3"/></label>
+		<label class="rag" for="sigmaTrajetoria">Sigma: <input type="number" id="sigmaTrajetoria" min="0.01" max="1" step="0.01" value="0.1"/></label>
+	</div>
+	
+	<div id="solidBar">
+		<label for="scalePerfil">Escala Perfil: <input type="number" id="scalePerfil" min="0.005" step="0.005" value="0.05"/></label>
+		<label for="scalePerfil">Rotacionar: 
+			<button id="rotateX">X</button>
+			<button id="rotateY">Y</button>
+			<button id="rotateZ">Z</button>
+		</label>
+	</div>
+	
+	</body>
+</html>

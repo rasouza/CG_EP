@@ -1,0 +1,17 @@
+Instruções de instalação:
+1) Descompacte a pasta DanielSavoy;
+2) Copie a pasta para a mesma localização onde se encontra a pasta Common, que contém as bibliotecas de apoio, devendo ficar PATH/Common e PATH/DanielSavoy;
+3) Abra o arquivo PATH/DanielSavoy/curves.html no browser;
+
+Instruções de uso:
+1) Clique nos pontos de controle e arraste para movimentá-los;
+2) Clique em algum ponto das telas para adicionar mais pontos de controle;
+3) Clique em ZERAR CP para retornar ao número inicial de pontos de controle;
+4) Utilize os parâmetros de GRAU (para B-Spline) e SIGMA (para RaG) para modificar as curvas;
+5) Utilize o parâmetro de ESCALA PERFIL para regular a relação de escala entre o perfil e a trajetória;
+6) Clique nos botões X, Y e Z para rotacionar a extrusão;
+
+
+OBS: 
+ - EXTRUSÃO IMPLEMENTADA APENAS PARCIALMENTE;
+ - TESTADO APENAS NO CHROME WINDOWS;

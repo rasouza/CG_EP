@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebGL Up - 3D</title>
+    
+    <script src="../jquery.js"></script>
+    <script src="../webgl-utils.js"></script>
+    <script src="../gl-matrix.js"></script>
+
+    <script id="vshader" type="x-shader/x-vertex">
+        attribute vec3 a_position;
+        
+        uniform mat4 uvMatrix;
+        uniform mat4 pMatrix;
+        
+        varying vec4 v_color;
+        
+        void main() {
+            gl_Position = pMatrix * uvMatrix * vec4(a_position, 1);
+            v_color = gl_Position; 
+        }
+    </script>
+    
+    <script id="fshader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 v_color;
+        void main(void) { gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); }
+    </script>
+    
+    <script src="init.js"></script>
+
+</head>
+<body>
+    <canvas id="webgl-canvas" width="800" height="600"></canvas>
+</body>
+</html>
